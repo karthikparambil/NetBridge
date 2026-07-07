@@ -1,51 +1,51 @@
-# NetBridge: Kali Linux Wi-Fi Hotspot
+# NetBridge: Kali Hotspot
 
-NetBridge is a streamlined solution for configuring a Wi-Fi hotspot on Kali Linux using **NetworkManager (`nmcli`)**. It facilitates sharing an existing internet connection from one network interface (e.g., a USB Wi-Fi adapter) to another (e.g., the built-in Wi-Fi adapter).
+NetBridge sets up a Wi-Fi hotspot on Kali Linux. It uses **NetworkManager (`nmcli`)**. It shares internet from one adapter to another.
 
 ## Overview
 
-The tool automates the process of creating a WPA2-protected Access Point and configuring the necessary NAT and IP forwarding rules to ensure seamless internet connectivity for connected clients.
+This tool automates hotspot creation. It secures the connection with WPA2. It configures NAT and IP forwarding. This ensures internet for all clients.
 
-### Network Architecture
+### Network Roles
 
 | Interface | Role | Description |
 | :--- | :--- | :--- |
-| `wlan0` | **Hotspot** | Built-in Wi-Fi adapter acting as the Access Point. |
-| `wlan1` | **Upstream** | Secondary adapter (USB/Ethernet) providing internet access. |
+| `wlan0` | **Hotspot** | Acts as the Access Point. |
+| `wlan1` | **Upstream** | Provides internet access. |
 
 ---
 
 ## Prerequisites
 
-To use this setup, ensure your system meets the following requirements:
+Check your system requirements:
 
-* **OS**: Kali Linux with `NetworkManager` enabled.
+* **OS**: Kali Linux. `NetworkManager` must be enabled.
 * **Hardware**: 
-    * A Wi-Fi adapter capable of **Access Point (AP) mode** (typically the built-in card).
-    * A secondary internet source (USB Wi-Fi adapter, Ethernet, or Cellular).
-* **Permissions**: Root or sudo privileges are required for network configuration.
+    * One adapter with **AP mode** support.
+    * One secondary internet source (USB, Ethernet, or Cellular).
+* **Permissions**: Root or sudo access is required.
 
 ---
 
 ## Usage
 
-Instead of manual configuration, use the provided automation script to set up the bridge.
+Use the script for fast setup.
 
 ### 1. Configuration
-Review the `start.sh` script to ensure the interface names (`HOTSPOT_IF` and `INTERNET_IF`) match your system's hardware.
+Check `start.sh`. Ensure `HOTSPOT_IF` and `INTERNET_IF` match your hardware.
 
 ### 2. Execution
-Run the script with sudo privileges:
+Run the script with sudo:
 ```bash
 sudo ./start.sh
 ```
 
-The script will:
-1. Restart NetworkManager.
-2. Clean up any existing "Hotspot" profiles.
-3. Initialize the new Wi-Fi Hotspot.
-4. Enable IPv4 sharing and IP forwarding.
-5. Configure IPTables for NAT and traffic forwarding.
+The script performs these tasks:
+1. Restarts NetworkManager.
+2. Deletes old "Hotspot" profiles.
+3. Starts the new Wi-Fi Hotspot.
+4. Enables IPv4 sharing and forwarding.
+5. Sets IPTables rules for NAT.
 
 ---
 
@@ -66,28 +66,29 @@ graph TD
 ## Verification & Troubleshooting
 
 ### Connectivity Checks
-If clients connect but cannot access the internet, verify the following:
-* **IP Forwarding**: Ensure `/proc/sys/net/ipv4/ip_forward` is set to `1`.
-* **NAT Rules**: Confirm the `MASQUERADE` rule is active in the `nat` table of IPTables.
-* **Interface Status**: Use `nmcli device status` to ensure both interfaces are connected and managed.
+Check these if internet fails:
+* **IP Forwarding**: File `/proc/sys/net/ipv4/ip_forward` must contain `1`.
+* **NAT Rules**: The `MASQUERADE` rule must be in the `nat` table.
+* **Interface Status**: Run `nmcli device status`. Check both adapters.
 
 ### Common Issues
-* **AP Mode Support**: Not all Wi-Fi drivers support Access Point mode. If the hotspot fails to start, verify your hardware capabilities using `iw list`.
-* **Subnet Conflicts**: By default, NetworkManager uses the `10.42.0.0/24` subnet. Ensure this does not conflict with your upstream network.
+* **AP Mode**: Some drivers lack AP support. Use `iw list` to check.
+* **IP Conflicts**: The default subnet is `10.42.0.0/24`. Ensure it is unique.
 
 ---
 
 ## Cleanup
 
-To revert the changes and remove the hotspot configuration, you can delete the connection profile via NetworkManager:
+Remove the hotspot profile to revert:
 ```bash
 sudo nmcli connection delete Hotspot
 ```
-You should also flush the temporary IPTables rules if a persistent firewall is not being used.
+Flush temporary IPTables rules if needed.
 
 ---
 
 ## Notes
-* The hotspot is secured with WPA2-PSK by default.
-* IP forwarding and NAT are essential for the "bridge" functionality.
-* This setup is designed for temporary network sharing and may require persistence configuration for long-term use.
+* The hotspot uses WPA2-PSK.
+* NAT is required for bridging.
+* This setup is for temporary sharing.
+
