@@ -53,11 +53,11 @@ The script will:
 
 ```mermaid
 graph TD
-    Internet((Internet)) --> Router[Home Wi-Fi Router]
+    Internet((Internet)) --> Router[Wi-Fi Router]
     Router --> W1[TP-Link Adapter - wlan1]
     W1 --> Kali[Kali Linux System]
     Kali --> W0[Built-in Wi-Fi - wlan0]
-    W0 --> SSID[KaliHotspot SSID]
+    W0 --> SSID[Hotspot SSID]
     SSID --> Clients[Mobile / Laptop Clients]
 ```
 
